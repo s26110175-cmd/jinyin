@@ -1,1 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網頁冒險家 小明的作品集 🎮</title>
+    
+    <!-- Google Fonts 導入可愛字體 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Mochiy+Pop+One&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        * {
+            font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
+        .font-pop {
+            font-family: 'Mochiy Pop One', 'Noto Sans TC', cursive;
+        }
+
+        /* 馬卡龍柔和漸層背景 */
+        body {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 40%, #fbc2eb 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 雲朵漂浮動畫 */
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.04);
+            animation: floatCloud linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes floatCloud {
+            0% { transform: translateX(-220px); }
+            100% { transform: translateX(100vw); }
+        }
+
+        /* 果凍彈簧波浪效果 (Jelly Bounce) */
+        @keyframes jelly {
+            0% { transform: scale(1, 1); }
+            30% { transform: scale(1.1, 0.9); }
+            40% { transform: scale(0.92, 1.08); }
+            50% { transform: scale(1.05, 0.95); }
+            65% { transform: scale(0.98, 1.02); }
+            75% { transform: scale(1.02, 0.98); }
+            100% { transform: scale(1, 1); }
+        }
+
+        /* 未解鎖卡片抖動效果 (Locked Shake) */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px) rotate(-3deg); }
+            40% { transform: translateX(6px) rotate(3deg); }
+            60% { transform: translateX(-4px) rotate(-2deg); }
+            80% { transform: translateX(4px) rotate(2deg); }
+        }
+
+        /* 背景星星閃爍動畫 */
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2) translateY(-8px); }
+        }
+
+        .sparkle-dot {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            animation: sparkle 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* 光斑流光閃爍 */
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+
+        /* 解鎖卡片 Hover 樣式 */
+        .unlocked-card {
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 20px -5px rgba(255, 182, 193, 0.4), 
+                        0 4px 6px -2px rgba(0, 0, 0, 0.05),
+                        inset 0 -4px 0 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .unlocked-card:hover {
+            animation: jelly 0.75s ease;
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 30px -8px rgba(255, 105, 180, 0.45), 
+                        0 0 20px 4px rgba(255, 255, 255, 0.9),
+                        inset 0 -4px 0 0 rgba(0, 0, 0, 0.15);
+        }
+
+        .unlocked-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-20deg) translateX(-150%);
+            transition: none;
+        }
+
+        .unlocked-card:hover::after {
+            animation: shimmer 1s ease-in-out;
+        }
+
+        /* 未解鎖卡片 Hover 樣式 */
+        .locked-card {
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05), inset 0 -3px 0 rgba(0,0,0,0.08);
+        }
+
+        .locked-card:hover {
+            animation: shake 0.4s ease-in-out;
+            border-color: #fca5a5;
+            background-color: #fef2f2;
+        }
+
+        /* 鎖頭 Tooltip 浮層 */
+        .locked-card .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateY(10px) translateX(-50%);
+        }
+
+        .locked-card:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0) translateX(-50%);
+        }
+
+        /* 頭像柔光 */
+        .avatar-glow {
+            box-shadow: 0 0 25px rgba(255, 182, 193, 0.8), 0 0 10px rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+<body class="py-8 px-4 sm:px-8 flex flex-col items-center justify-start min-h-screen">
+
+    <div class="cloud w-32 h-10 top-12" style="animation-duration: 28s; animation-delay: -3s;"></div>
+    <div class="cloud w-48 h-14 top-36" style="animation-duration: 38s; animation-delay: -18s;"></div>
+    <div class="cloud w-40 h-12 top-2/3" style="animation-duration: 32s; animation-delay: -10s;"></div>
+    
+    <div class="sparkle-dot w-3 h-3 top-20 left-10" style="animation-delay: 0s;"></div>
+    <div class="sparkle-dot w-4 h-4 top-40 right-20" style="animation-delay: 1s;"></div>
+    <div class="sparkle-dot w-2 h-2 bottom-32 left-1/4" style="animation-delay: 1.5s;"></div>
+    <div class="sparkle-dot w-3 h-3 bottom-20 right-1/3" style="animation-delay: 0.5s;"></div>
+
+    <!-- 訊息提示彈窗 (Custom Alert Modal) -->
+    <div id="lockModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl border-4 border-pink-300 transform scale-90 transition-transform duration-300 id-modal-box">
+            <div class="text-4xl mb-2">🔒</div>
+            <h3 class="text-xl font-bold font-pop text-gray-800">關卡尚未開放！</h3>
+            <p id="modalText" class="text-xs text-gray-500 mt-2">請先解鎖前面的關卡，勇者大人加油！✨</p>
+            <button onclick="closeModal()" class="mt-5 bg-gradient-to-r from-pink-400 to-purple-400 text-white font-bold px-6 py-2 rounded-full shadow-lg hover:brightness-105 active:scale-95 transition-all text-sm">
+                知道囉！
+            </button>
+        </div>
+    </div>
+
+    <main class="relative z-10 w-full max-w-5xl flex flex-col items-center">
+        
+        <!-- 中央個人資訊區塊 -->
+        <header class="w-full max-w-md bg-white/85 backdrop-blur-md rounded-3xl p-6 mb-8 text-center border-4 border-white shadow-xl relative transform hover:scale-[1.01] transition-transform duration-300">
+            <!-- 右上角可愛隊伍標籤 -->
+            <div class="absolute -top-4 -right-2 bg-gradient-to-r from-pink-400 to-purple-400 text-white font-pop text-[11px] px-3 py-1 rounded-full shadow-md transform rotate-6 border-2 border-white">
+                ✨ QUEST ON!
+            </div>
+
+            <!-- 頭像區塊 -->
+            <div class="relative inline-block mb-3">
+                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-pink-300 p-1 bg-gradient-to-tr from-pink-200 via-purple-100 to-blue-200 avatar-glow transition-all duration-300">
+                    <img src="https://i.postimg.cc/ncf90BFM/Tep-000.png" 
+                         alt="大頭貼" 
+                         class="w-full h-full object-cover rounded-full border-2 border-white bg-pink-50"
+                         onerror="this.src='https://placehold.co/150x150/FFB6C1/ffffff?text=Cute+Me'">
+                </div>
+                <!-- 等級標籤 -->
+                <span class="absolute bottom-0 -right-2 bg-amber-300 text-amber-900 font-extrabold text-xs px-3 py-1 rounded-full border-2 border-white shadow-md flex items-center gap-1">
+                    <span>⭐</span> LV.16 網頁開發新手
+                </span>
+            </div>
+
+            <!-- 名字與稱號 -->
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-800 tracking-wide font-pop flex items-center justify-center gap-2 mt-1">
+                裴氏金銀 🎮
+            </h1>
+            <p class="text-xs sm:text-sm font-semibold text-pink-500 mt-1">網頁程式設計課程闖關地圖 ✨</p>
+
+            <!-- 經驗值進度條 -->
+            <div class="mt-4 w-full bg-pink-100 rounded-full h-4 p-0.5 border border-pink-200 shadow-inner relative overflow-hidden">
+                <div class="bg-gradient-to-r from-pink-400 via-purple-400 to-amber-400 h-full rounded-full w-[12.5%] transition-all duration-1000 shadow"></div>
+                <span class="absolute inset-0 flex items-center justify-center text-[10px] font-extrabold text-gray-700 tracking-wider">
+                    EXP: 2 / 16 關卡已解鎖 (12.5%)
+                </span>
+            </div>
+        </header>
+
+        <section class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+
+            <!-- Card 1: Week 1 (已解鎖) -->
+            <a href="w1/index.html" class="unlocked-card bg-gradient-to-br from-pink-100 via-purple-50 to-pink-50 border-2 border-pink-300 rounded-2xl p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-pink-400 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
+                            WEEK 01
+                        </span>
+                        <span class="text-xl">🌟</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-800 font-pop group-hover:text-pink-600 transition-colors">
+                        Week 1 - 數位名片
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1">個人品牌展示，學習 HTML/CSS 基礎與元件排版。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-pink-100">
+                    <span class="text-xs font-bold text-emerald-500 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 已解鎖
+                    </span>
+                    <span class="text-xs font-extrabold text-pink-500 group-hover:translate-x-1 transition-transform">
+                        前往冒險 ➔
+                    </span>
+                </div>
+            </a>
+
+            <!-- Card 2: Week 2 (已解鎖) -->
+            <a href="w2/index.html" class="unlocked-card bg-gradient-to-br from-sky-100 via-blue-50 to-teal-50 border-2 border-sky-300 rounded-2xl p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-sky-400 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
+                            WEEK 02
+                        </span>
+                        <span class="text-xl">🍕</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-800 font-pop group-hover:text-sky-600 transition-colors">
+                        Week 2 - 今天吃甚麼?
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1">選擇困難救星！互動式美食選擇輪盤專案。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-sky-100">
+                    <span class="text-xs font-bold text-emerald-500 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 已解鎖
+                    </span>
+                    <span class="text-xs font-extrabold text-sky-500 group-hover:translate-x-1 transition-transform">
+                        前往冒險 ➔
+                    </span>
+                </div>
+            </a>
+
+            <!-- Helper Function Script for JS Alert Modals -->
+            <!-- Week 3 ~ Week 16 (未解鎖卡片) -->
+            
+            <!-- Week 3 -->
+            <div onclick="showLockedAlert('Week 3')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 03
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 3 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 4 -->
+            <div onclick="showLockedAlert('Week 4')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 04
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 4 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 5 -->
+            <div onclick="showLockedAlert('Week 5')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 05
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 5 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 6 -->
+            <div onclick="showLockedAlert('Week 6')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 06
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 6 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 7 -->
+            <div onclick="showLockedAlert('Week 7')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 07
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 7 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 8 -->
+            <div onclick="showLockedAlert('Week 8')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 08
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 8 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 9 -->
+            <div onclick="showLockedAlert('Week 9')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 09
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 9 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 10 -->
+            <div onclick="showLockedAlert('Week 10')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 10
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 10 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 11 -->
+            <div onclick="showLockedAlert('Week 11')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 11
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 11 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 12 -->
+            <div onclick="showLockedAlert('Week 12')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 12
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 12 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 13 -->
+            <div onclick="showLockedAlert('Week 13')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 13
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 13 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 14 -->
+            <div onclick="showLockedAlert('Week 14')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 14
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 14 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 15 -->
+            <div onclick="showLockedAlert('Week 15')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 15
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 15 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 16 (FINAL BOSS) -->
+            <div onclick="showLockedAlert('Week 16')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    👑 終極大魔王關卡！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gradient-to-r from-amber-400 to-pink-400 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
+                            WEEK 16 (FINAL)
+                        </span>
+                        <span class="text-base">👑</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 16 - 終極大魔王</h3>
+                    <p class="text-xs text-gray-400 mt-1">期末專題作品，解鎖終極榮譽徽章！</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">BOSS</span>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- 頁尾 -->
+        <footer class="mt-12 text-center text-xs text-gray-600 font-medium pb-6">
+            <p>© 2026 網頁程式設計課程作品集 | Made with 💖 & Tailwind CSS</p>
+        </footer>
+    </main>
+
+    <!-- JS 互動邏輯：用於鎖定關卡提示彈窗 -->
+    <script>
+        function showLockedAlert(weekName) {
+            const modal = document.getElementById('lockModal');
+            const modalText = document.getElementById('modalText');
+            modalText.innerText = `『${weekName}』尚未開放挑戰，請繼續完成作業累積經驗值！✨`;
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+            modal.querySelector('.id-modal-box').classList.remove('scale-90');
+            modal.querySelector('.id-modal-box').classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('lockModal');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.querySelector('.id-modal-box').classList.remove('scale-100');
+            modal.querySelector('.id-modal-box').classList.add('scale-90');
+        }
+    </script>
+</body>
+</html>
