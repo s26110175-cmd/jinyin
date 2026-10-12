@@ -201,11 +201,11 @@
             </h1>
             <p class="text-xs sm:text-sm font-semibold text-pink-500 mt-1">網頁程式設計課程闖關地圖 ✨</p>
 
-            <!-- 經驗值進度條 -->
+            <!-- 經驗值進度條 (已更新為 3 / 16 解鎖 -> 18.75%) -->
             <div class="mt-4 w-full bg-pink-100 rounded-full h-4 p-0.5 border border-pink-200 shadow-inner relative overflow-hidden">
-                <div class="bg-gradient-to-r from-pink-400 via-purple-400 to-amber-400 h-full rounded-full w-[12.5%] transition-all duration-1000 shadow"></div>
+                <div class="bg-gradient-to-r from-pink-400 via-purple-400 to-amber-400 h-full rounded-full w-[18.75%] transition-all duration-1000 shadow"></div>
                 <span class="absolute inset-0 flex items-center justify-center text-[10px] font-extrabold text-gray-700 tracking-wider">
-                    EXP: 2 / 16 關卡已解鎖 (12.5%)
+                    EXP: 3 / 16 關卡已解鎖 (18.75%)
                 </span>
             </div>
         </header>
@@ -260,29 +260,31 @@
                 </div>
             </a>
 
-            <!-- Helper Function Script for JS Alert Modals -->
-            <!-- Week 3 ~ Week 16 (未解鎖卡片) -->
-            
-            <!-- Week 3 -->
-            <div onclick="showLockedAlert('Week 3')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
+            <!-- Card 3: Week 3 (已解鎖 - 迷因產生器) -->
+            <a href="w3/index.html" class="unlocked-card bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-50 border-2 border-amber-300 rounded-2xl p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden">
                 <div>
                     <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                        <span class="bg-amber-400 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
                             WEEK 03
                         </span>
-                        <span class="text-base">🔒</span>
+                        <span class="text-xl">🤡</span>
                     </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 3 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                    <h3 class="text-base font-bold text-gray-800 font-pop group-hover:text-amber-600 transition-colors">
+                        Week 3 - 迷因產生器
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1">梗圖製造機！自訂圖片與文字，打造專屬爆笑迷因。</p>
                 </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-amber-100">
+                    <span class="text-xs font-bold text-emerald-500 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 已解鎖
+                    </span>
+                    <span class="text-xs font-extrabold text-amber-500 group-hover:translate-x-1 transition-transform">
+                        前往冒險 ➔
+                    </span>
                 </div>
-            </div>
+            </a>
+
+            <!-- Week 4 ~ Week 16 (未解鎖卡片) -->
 
             <!-- Week 4 -->
             <div onclick="showLockedAlert('Week 4')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
@@ -574,17 +576,29 @@
             
             modal.classList.remove('opacity-0', 'pointer-events-none');
             modal.classList.add('opacity-100');
-            modal.querySelector('.id-modal-box').classList.remove('scale-90');
-            modal.querySelector('.id-modal-box').classList.add('scale-100');
+            
+            const modalBox = modal.querySelector('.id-modal-box');
+            modalBox.classList.remove('scale-90');
+            modalBox.classList.add('scale-100');
         }
 
         function closeModal() {
             const modal = document.getElementById('lockModal');
+            const modalBox = modal.querySelector('.id-modal-box');
+            
             modal.classList.remove('opacity-100');
             modal.classList.add('opacity-0', 'pointer-events-none');
-            modal.querySelector('.id-modal-box').classList.remove('scale-100');
-            modal.querySelector('.id-modal-box').classList.add('scale-90');
+            
+            modalBox.classList.remove('scale-100');
+            modalBox.classList.add('scale-90');
         }
+
+        // 點擊 Modal 背景遮罩亦可關閉
+        document.getElementById('lockModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html>
