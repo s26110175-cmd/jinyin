@@ -1,384 +1,610 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>可愛動態留言板</title>
-  <!-- 引入 Google Fonts 可愛圓體字型 (Fredoka) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>網頁冒險家 小明的作品集 🎮</title>
 
-  <style>
-    /* =========================================================
-       1. 全局與主題變數設定 (方便修改顏色)
-       ========================================================= */
-    :root {
-      /* 【顏色設定】你可以在這裡修改主要配色！ */
-      --bg-color: #fff5f7;           /* 網頁背景色 (溫和粉) */
-      --card-bg: #ffffff;            /* 卡片背景色 */
-      --text-main: #5a4b56;          /* 主文字顏色 (柔和深紫灰) */
-      --accent-color: #ff8fa3;       /* 主要主題色 (可愛粉) */
-      --accent-secondary: #ffb3c1;   /* 次要主題色 (淺粉) */
-      --highlight-glow: #ff4d6d;     /* 輪播高亮時發光的顏色 */
-      --font-family: 'Fredoka', "PingFang TC", "Microsoft JhengHei", sans-serif;
-      
-      /* 【輪播設定】動畫過渡時間 */
-      --transition-speed: 0.5s;
-    }
+    <!-- Google Fonts 導入可愛字體 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Mochiy+Pop+One&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    body {
-      background-color: var(--bg-color);
-      font-family: var(--font-family);
-      color: var(--text-main);
-      padding: 40px 20px;
-      min-height: 100vh;
-    }
+    <style>
+        * {
+            font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    /* 標題區域 */
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+        .font-pop {
+            font-family: 'Mochiy Pop One', 'Noto Sans TC', cursive;
+        }
 
-    header h1 {
-      font-size: 2.2rem;
-      color: var(--accent-color);
-      text-shadow: 2px 2px 0px #fff;
-      display: inline-block;
-      position: relative;
-    }
+        /* 馬卡龍柔和漸層背景 */
+        body {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 40%, #fbc2eb 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-    header h1::after {
-      content: '✨';
-      position: absolute;
-      right: -35px;
-      top: -5px;
-    }
+        /* 雲朵漂浮動畫 */
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.04);
+            animation: floatCloud linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
 
-    header h1::before {
-      content: '💖';
-      position: absolute;
-      left: -35px;
-      top: -5px;
-    }
+        @keyframes floatCloud {
+            0% { transform: translateX(-220px); }
+            100% { transform: translateX(100vw); }
+        }
 
-    /* =========================================================
-       2. 載入中動畫 (Loading Animation)
-       ========================================================= */
-    #loading-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 60px 0;
-    }
+        /* 果凍彈簧波浪效果 (Jelly Bounce) */
+        @keyframes jelly {
+            0% { transform: scale(1, 1); }
+            30% { transform: scale(1.1, 0.9); }
+            40% { transform: scale(0.92, 1.08); }
+            50% { transform: scale(1.05, 0.95); }
+            65% { transform: scale(0.98, 1.02); }
+            75% { transform: scale(1.02, 0.98); }
+            100% { transform: scale(1, 1); }
+        }
 
-    /* 愛心跳動動畫 */
-    .heart-loader {
-      font-size: 3rem;
-      animation: heartbeat 1.2s infinite ease-in-out;
-    }
+        /* 未解鎖卡片抖動效果 (Locked Shake) */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px) rotate(-3deg); }
+            40% { transform: translateX(6px) rotate(3deg); }
+            60% { transform: translateX(-4px) rotate(-2deg); }
+            80% { transform: translateX(4px) rotate(2deg); }
+        }
 
-    .loading-text {
-      margin-top: 15px;
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--accent-color);
-      letter-spacing: 2px;
-      animation: blink 1.5s infinite;
-    }
+        /* 背景星星閃爍動畫 */
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2) translateY(-8px); }
+        }
 
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      25% { transform: scale(1.3); }
-      50% { transform: scale(1.1); }
-      75% { transform: scale(1.25); }
-    }
+        .sparkle-dot {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            animation: sparkle 3s ease-in-out infinite;
+            pointer-events: none;
+        }
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
+        /* 光斑流光閃爍 */
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
 
-    /* =========================================================
-       3. 瀑布流排版 (Masonry Layout)
-       ========================================================= */
-    .masonry-wall {
-      /* 設定欄數 */
-      column-count: 4;
-      column-gap: 20px;
-      max-width: 1200px;
-      margin: 0 auto;
-      display: none; /* 載入完成前隱藏 */
-    }
+        /* 解鎖卡片 Hover 樣式 */
+        .unlocked-card {
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 20px -5px rgba(255, 182, 193, 0.4), 
+                        0 4px 6px -2px rgba(0, 0, 0, 0.05),
+                        inset 0 -4px 0 0 rgba(0, 0, 0, 0.1);
+        }
 
-    /* 響應式斷點：手機與平板視窗彈性調整欄數 */
-    @media (max-width: 1024px) { .masonry-wall { column-count: 3; } }
-    @media (max-width: 768px)  { .masonry-wall { column-count: 2; } }
-    @media (max-width: 480px)  { .masonry-wall { column-count: 1; } }
+        .unlocked-card:hover {
+            animation: jelly 0.75s ease;
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 30px -8px rgba(255, 105, 180, 0.45), 
+                        0 0 20px 4px rgba(255, 255, 255, 0.9),
+                        inset 0 -4px 0 0 rgba(0, 0, 0, 0.15);
+        }
 
-    /* =========================================================
-       4. 留言卡片樣式與高亮特效
-       ========================================================= */
-    .card {
-      background-color: var(--card-bg);
-      border-radius: 20px;
-      padding: 20px;
-      margin-bottom: 20px;
-      /* 防止卡片被跨欄截斷 */
-      break-inside: avoid;
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
-      border: 3px solid #fff;
-      position: relative;
-      
-      /* 設定動態轉換效果 */
-      transition: transform var(--transition-speed), 
-                  box-shadow var(--transition-speed), 
-                  filter var(--transition-speed),
-                  opacity var(--transition-speed);
-      
-      cursor: pointer;
-    }
+        .unlocked-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-20deg) translateX(-150%);
+            transition: none;
+        }
 
-    /* 卡片頭像與姓名列 */
-    .card-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
-    }
+        .unlocked-card:hover::after {
+            animation: shimmer 1s ease-in-out;
+        }
 
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: var(--accent-secondary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      margin-right: 10px;
-    }
+        /* 未解鎖卡片 Hover 樣式 */
+        .locked-card {
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05), inset 0 -3px 0 rgba(0,0,0,0.08);
+        }
 
-    .author-name {
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--text-main);
-    }
+        .locked-card:hover {
+            animation: shake 0.4s ease-in-out;
+            border-color: #fca5a5;
+            background-color: #fef2f2;
+        }
 
-    /* 留言內容 */
-    .card-body {
-      font-size: 0.95rem;
-      line-height: 1.6;
-      word-wrap: break-word;
-      color: #666;
-    }
+        /* 鎖頭 Tooltip 浮層 */
+        .locked-card .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateY(10px) translateX(-50%);
+        }
 
-    /* 【亮起/高亮焦點特效 (Active Highlight)】 */
-    .card.active {
-      transform: scale(1.08) translateY(-5px);
-      z-index: 10;
-      /* 鮮豔發光外框 */
-      border-color: var(--accent-color);
-      box-shadow: 0 12px 30px rgba(255, 77, 109, 0.3), 
-                  0 0 15px var(--highlight-glow);
-      filter: blur(0px);
-      opacity: 1;
-    }
+        .locked-card:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0) translateX(-50%);
+        }
 
-    /* 【沒被選中的卡片特效】讓焦點更集中 */
-    .masonry-wall.has-active .card:not(.active) {
-      filter: blur(1.5px);
-      opacity: 0.65;
-      transform: scale(0.98);
-    }
-  </style>
+        /* 頭像柔光 */
+        .avatar-glow {
+            box-shadow: 0 0 25px rgba(255, 182, 193, 0.8), 0 0 10px rgba(255, 255, 255, 0.9);
+        }
+    </style>
 </head>
-<body>
+<body class="py-8 px-4 sm:px-8 flex flex-col items-center justify-start min-h-screen">
 
-  <header>
-    <h1>朋友對我的動態留言板</h1>
-  </header>
+    <div class="cloud w-32 h-10 top-12" style="animation-duration: 28s; animation-delay: -3s;"></div>
+    <div class="cloud w-48 h-14 top-36" style="animation-duration: 38s; animation-delay: -18s;"></div>
+    <div class="cloud w-40 h-12 top-2/3" style="animation-duration: 32s; animation-delay: -10s;"></div>
 
-  <!-- 讀取中動畫區塊 -->
-  <div id="loading-container">
-    <div class="heart-loader">💌</div>
-    <div class="loading-text">讀取留言中...</div>
-  </div>
+    <div class="sparkle-dot w-3 h-3 top-20 left-10" style="animation-delay: 0s;"></div>
+    <div class="sparkle-dot w-4 h-4 top-40 right-20" style="animation-delay: 1s;"></div>
+    <div class="sparkle-dot w-2 h-2 bottom-32 left-1/4" style="animation-delay: 1.5s;"></div>
+    <div class="sparkle-dot w-3 h-3 bottom-20 right-1/3" style="animation-delay: 0.5s;"></div>
 
-  <!-- 瀑布流卡片牆 -->
-  <div id="masonry-wall" class="masonry-wall"></div>
+    <!-- 訊息提示彈窗 (Custom Alert Modal) -->
+    <div id="lockModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl border-4 border-pink-300 transform scale-90 transition-transform duration-300 id-modal-box">
+            <div class="text-4xl mb-2">🔒</div>
+            <h3 class="text-xl font-bold font-pop text-gray-800">關卡尚未開放！</h3>
+            <p id="modalText" class="text-xs text-gray-500 mt-2">請先解鎖前面的關卡，勇者大人加油！✨</p>
+            <button onclick="closeModal()" class="mt-5 bg-gradient-to-r from-pink-400 to-purple-400 text-white font-bold px-6 py-2 rounded-full shadow-lg hover:brightness-105 active:scale-95 transition-all text-sm">
+                知道囉！
+            </button>
+        </div>
+    </div>
 
-  <script>
-    /* =========================================================
-       JavaScript 邏輯區域
-       ========================================================= */
+    <main class="relative z-10 w-full max-w-5xl flex flex-col items-center">
 
-    // 【設定區】你可以自由修改以下變數！
-    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR2wripPheWinIHuPGBjXENxaAbGNDR0PkoqtEMGE384GIBAtHXmS0wo3YGyRVi7yZw7DPvsSMnyLj4/pub?output=csv';
-    
-    // 💡 輪播切換的時間 (單位：毫秒，3000ms = 3秒)
-    const CAROUSEL_INTERVAL = 3000; 
+        <!-- 中央個人資訊區塊 -->
+        <header class="w-full max-w-md bg-white/85 backdrop-blur-md rounded-3xl p-6 mb-8 text-center border-4 border-white shadow-xl relative transform hover:scale-[1.01] transition-transform duration-300">
+            <!-- 右上角可愛隊伍標籤 -->
+            <div class="absolute -top-4 -right-2 bg-gradient-to-r from-pink-400 to-purple-400 text-white font-pop text-[11px] px-3 py-1 rounded-full shadow-md transform rotate-6 border-2 border-white">
+                ✨ QUEST ON!
+            </div>
 
-    // 可愛圖示陣列，隨機賦予每個留言頭像
-    const EMOJIS = ['🐶', '🐱', '🐰', '🦊', '🐻', '🐼', '🐥', '🦄', '🍓', '🌸'];
+            <!-- 頭像區塊 -->
+            <div class="relative inline-block mb-3">
+                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-pink-300 p-1 bg-gradient-to-tr from-pink-200 via-purple-100 to-blue-200 avatar-glow transition-all duration-300">
+                    <img src="https://i.postimg.cc/ncf90BFM/Tep-000.png" 
+                         alt="大頭貼" 
+                         class="w-full h-full object-cover rounded-full border-2 border-white bg-pink-50"
+                         onerror="this.src='https://placehold.co/150x150/FFB6C1/ffffff?text=Cute+Me'">
+                </div>
+                <!-- 等級標籤 -->
+                <span class="absolute bottom-0 -right-2 bg-amber-300 text-amber-900 font-extrabold text-xs px-3 py-1 rounded-full border-2 border-white shadow-md flex items-center gap-1">
+                    <span>⭐</span> LV.16 網頁開發新手
+                </span>
+            </div>
 
-    let messageCards = []; // 存放 DOM 卡片節點
-    let currentIndex = 0;  // 當前輪播索引
-    let carouselTimer = null;
+            <!-- 名字與稱號 -->
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-800 tracking-wide font-pop flex items-center justify-center gap-2 mt-1">
+                裴氏金銀 🎮
+            </h1>
+            <p class="text-xs sm:text-sm font-semibold text-pink-500 mt-1">網頁程式設計課程闖關地圖 ✨</p>
 
-    // 頁面載入後執行
-    document.addEventListener('DOMContentLoaded', () => {
-      fetchMessages();
-    });
+            <!-- 經驗值進度條 (已更新為 4 / 16 解鎖 -> 25%) -->
+            <div class="mt-4 w-full bg-pink-100 rounded-full h-4 p-0.5 border border-pink-200 shadow-inner relative overflow-hidden">
+                <div class="bg-gradient-to-r from-pink-400 via-purple-400 to-amber-400 h-full rounded-full w-[25%] transition-all duration-1000 shadow"></div>
+                <span class="absolute inset-0 flex items-center justify-center text-[10px] font-extrabold text-gray-700 tracking-wider">
+                    EXP: 4 / 16 關卡已解鎖 (25%)
+                </span>
+            </div>
+        </header>
 
-    /**
-     * 1. 使用 fetch 讀取 CSV 資料
-     */
-    async function fetchMessages() {
-      try {
-        const response = await fetch(CSV_URL);
-        const csvText = await response.text();
-        
-        // 解析 CSV 資料
-        const parsedData = parseCSV(csvText);
-        
-        // 渲染卡片
-        renderCards(parsedData);
+        <!-- 關卡網格 -->
+        <section class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
-        // 隱藏 Loading，顯示瀑布流牆面
-        document.getElementById('loading-container').style.display = 'none';
-        const wall = document.getElementById('masonry-wall');
-        wall.style.display = 'block';
+            <!-- Card 1: Week 1 -->
+            <a href="w1/index.html" class="unlocked-card bg-gradient-to-br from-pink-100 via-purple-50 to-indigo-50 border-2 border-pink-300 rounded-2xl p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-pink-400 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
+                            WEEK 01
+                        </span>
+                        <span class="text-xl">🌟</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-800 font-pop group-hover:text-pink-600 transition-colors">
+                        Week 1 - 個人簡介
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1">初次見面！建立專屬的個人自我介紹頁面。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-pink-100">
+                    <span class="text-xs font-bold text-emerald-500 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 已解鎖
+                    </span>
+                    <span class="text-xs font-extrabold text-pink-500 group-hover:translate-x-1 transition-transform">
+                        前往冒險 ➔
+                    </span>
+                </div>
+            </a>
 
-        // 啟動自動輪播特效
-        startCarousel();
+            <!-- Card 2: Week 2 -->
+            <a href="w2/index.html" class="unlocked-card bg-gradient-to-br from-blue-100 via-cyan-50 to-teal-50 border-2 border-blue-300 rounded-2xl p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-blue-400 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
+                            WEEK 02
+                        </span>
+                        <span class="text-xl">🎨</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-800 font-pop group-hover:text-blue-600 transition-colors">
+                        Week 2 - 互動作品集
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1">運用 CSS 與動畫打造流暢的網頁視覺體驗。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-blue-100">
+                    <span class="text-xs font-bold text-emerald-500 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 已解鎖
+                    </span>
+                    <span class="text-xs font-extrabold text-blue-500 group-hover:translate-x-1 transition-transform">
+                        前往冒險 ➔
+                    </span>
+                </div>
+            </a>
 
-      } catch (error) {
-        console.error('讀取 CSV 失敗:', error);
-        document.querySelector('.loading-text').innerText = '載入失敗，請稍後再試！';
-      }
-    }
+            <!-- Card 3: Week 3 (已解鎖 - 迷因產生器) -->
+            <a href="w3/index.html" class="unlocked-card bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-50 border-2 border-amber-300 rounded-2xl p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-amber-400 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
+                            WEEK 03
+                        </span>
+                        <span class="text-xl">🤡</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-800 font-pop group-hover:text-amber-600 transition-colors">
+                        Week 3 - 迷因產生器
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1">梗圖製造機！自訂圖片與文字，打造專屬爆笑迷因。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-amber-100">
+                    <span class="text-xs font-bold text-emerald-500 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 已解鎖
+                    </span>
+                    <span class="text-xs font-extrabold text-amber-500 group-hover:translate-x-1 transition-transform">
+                        前往冒險 ➔
+                    </span>
+                </div>
+            </a>
 
-    /**
-     * 2. CSV 解析器 (處理雙引號與留言內含逗號的情況)
-     */
-    function parseCSV(text) {
-      const lines = text.trim().split('\n');
-      const result = [];
+            <!-- Card 4: Week 4 (已解鎖 - 悄悄話) -->
+            <a href="w4/index.html" class="unlocked-card bg-gradient-to-br from-purple-100 via-pink-50 to-fuchsia-50 border-2 border-purple-300 rounded-2xl p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-purple-400 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
+                            WEEK 04
+                        </span>
+                        <span class="text-xl">💬</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-800 font-pop group-hover:text-purple-600 transition-colors">
+                        Week 4 - 悄悄話
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1">留下不可說的小秘密，傳遞溫暖訊息的悄悄話專區。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-purple-100">
+                    <span class="text-xs font-bold text-emerald-500 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 已解鎖
+                    </span>
+                    <span class="text-xs font-extrabold text-purple-500 group-hover:translate-x-1 transition-transform">
+                        前往冒險 ➔
+                    </span>
+                </div>
+            </a>
 
-      // 從第 1 行開始 (跳過第 0 行欄位標題)
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
+            <!-- Week 5 ~ Week 16 (未解鎖卡片) -->
 
-        // 使用正則表達式切分 CSV 欄位（處理包含在雙引號內的逗號）
-        const row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
-        
-        // 簡單切分備用邏輯（若正則匹配不完整時）
-        const fields = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            <!-- Week 5 -->
+            <div onclick="showLockedAlert('Week 5')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 05
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 5 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
 
-        if (fields.length >= 3) {
-          // 清理引號
-          const name = fields[1].replace(/^"|"$/g, '').trim();
-          const message = fields[2].replace(/^"|"$/g, '').trim();
+            <!-- Week 6 -->
+            <div onclick="showLockedAlert('Week 6')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 06
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 6 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
 
-          if (name && message) {
-            result.push({ name, message });
-          }
+            <!-- Week 7 -->
+            <div onclick="showLockedAlert('Week 7')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 07
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 7 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 8 -->
+            <div onclick="showLockedAlert('Week 8')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 08
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 8 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 9 -->
+            <div onclick="showLockedAlert('Week 9')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 09
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 9 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 10 -->
+            <div onclick="showLockedAlert('Week 10')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 10
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 10 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 11 -->
+            <div onclick="showLockedAlert('Week 11')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 11
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 11 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 12 -->
+            <div onclick="showLockedAlert('Week 12')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 12
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 12 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 13 -->
+            <div onclick="showLockedAlert('Week 13')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 13
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 13 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 14 -->
+            <div onclick="showLockedAlert('Week 14')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 14
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 14 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 15 -->
+            <div onclick="showLockedAlert('Week 15')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 15
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 15 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+            <!-- Week 16 -->
+            <div onclick="showLockedAlert('Week 16')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
+                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
+                    🔒 尚未開放挑戰！
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
+                            WEEK 16
+                        </span>
+                        <span class="text-base">🔒</span>
+                    </div>
+                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 16 - 未解鎖</h3>
+                    <p class="text-xs text-gray-400 mt-1">最終大魔王關卡！完成所有挑戰即可獲得勳章。</p>
+                </div>
+                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
+                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- 頁尾 -->
+        <footer class="mt-12 text-center text-xs font-medium text-gray-600/80 bg-white/40 backdrop-blur-sm py-2 px-6 rounded-full border border-white/60">
+            © 2026 網頁冒險家 裴氏金銀 | Designed with Tailwind CSS ✨
+        </footer>
+
+    </main>
+
+    <!-- JavaScript 彈窗控制邏輯 -->
+    <script>
+        function showLockedAlert(weekName) {
+            const modal = document.getElementById('lockModal');
+            const modalText = document.getElementById('modalText');
+            
+            modalText.innerText = `${weekName} 關卡尚未開放，請勇者大人繼續加油！✨`;
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+            
+            const modalBox = modal.querySelector('.id-modal-box');
+            modalBox.classList.remove('scale-90');
+            modalBox.classList.add('scale-100');
         }
-      }
-      return result;
-    }
 
-    /**
-     * 3. 將資料動態生成 HTML 卡片
-     */
-    function renderCards(data) {
-      const wall = document.getElementById('masonry-wall');
-      wall.innerHTML = ''; // 清空內容
-
-      data.forEach((item, index) => {
-        // 隨機選一個可愛頭像
-        const randomEmoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-
-        // 創建卡片 DOM Element
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.setAttribute('data-index', index);
-
-        card.innerHTML = `
-          <div class="card-header">
-            <div class="avatar">${randomEmoji}</div>
-            <div class="author-name">${escapeHTML(item.name)}</div>
-          </div>
-          <div class="card-body">
-            ${escapeHTML(item.message)}
-          </div>
-        `;
-
-        wall.appendChild(card);
-      });
-
-      // 取得所有產生的卡片物件
-      messageCards = Array.from(document.querySelectorAll('.card'));
-    }
-
-    /**
-     * 4. 輪播焦點特效控制
-     */
-    function startCarousel() {
-      if (messageCards.length === 0) return;
-
-      const wall = document.getElementById('masonry-wall');
-      wall.classList.add('has-active'); // 啟用整體模糊輔助 class
-
-      // 立即執行第一次高亮
-      highlightCard(currentIndex);
-
-      // 設定定時器 (setInterval)
-      carouselTimer = setInterval(() => {
-        // 切換到下一個卡片索引
-        currentIndex = (currentIndex + 1) % messageCards.length;
-        highlightCard(currentIndex);
-      }, CAROUSEL_INTERVAL);
-    }
-
-    /**
-     * 切換指定索引卡片的高亮狀態
-     */
-    function highlightCard(index) {
-      messageCards.forEach((card, i) => {
-        if (i === index) {
-          card.classList.add('active');
-          // 自動平滑捲動視窗至該卡片 (可選體驗改善)
-          card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        } else {
-          card.classList.remove('active');
+        function closeModal() {
+            const modal = document.getElementById('lockModal');
+            const modalBox = modal.querySelector('.id-modal-box');
+            
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            
+            modalBox.classList.remove('scale-100');
+            modalBox.classList.add('scale-90');
         }
-      });
-    }
 
-    /**
-     * 安全轉義防範 XSS 攻擊
-     */
-    function escapeHTML(str) {
-      return str.replace(/[&<>'"]/g, 
-        tag => ({
-          '&': '&amp;',
-          '<': '&lt;',
-          '>': '&gt;',
-          "'": '&#39;',
-          '"': '&quot;'
-        }[tag] || tag)
-      );
-    }
-  </script>
+        // 點擊 Modal 背景遮罩亦可關閉
+        document.getElementById('lockModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
 </body>
 </html>
