@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人數位名片</title>
+    
+    <!-- CSS 樣式區塊 -->
+    <style>
+        /* 全局設定：整體置中與馬卡龍漸層背景 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* 馬卡龍柔和漸層背景 */
+            background: linear-gradient(135deg, #ffd1dc 0%, #e8dff5 50%, #fce1e4 100%);
+            padding: 20px;
+        }
+
+        /* 主名片卡片：毛玻璃質感與現代感微陰影 */
+        .card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 360px;
+            padding: 40px 30px;
+            border-radius: 28px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 15px 35px rgba(224, 170, 203, 0.3),
+                        0 5px 15px rgba(0, 0, 0, 0.04);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* 圓形大頭貼與柔和邊框 */
+        .avatar-container {
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #ddedf4;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 文字排版 */
+        .name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #4a4e69;
+            margin-bottom: 8px;
+        }
+
+        .bio {
+            font-size: 0.95rem;
+            color: #72779e;
+            line-height: 1.5;
+            margin-bottom: 28px;
+        }
+
+        /* 馬卡龍色系按鈕 */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.25s ease;
+        }
+
+        /* Instagram 按鈕 (馬卡龍粉) */
+        .btn-instagram {
+            background-color: #f7aef8;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(247, 174, 248, 0.4);
+        }
+
+        .btn-instagram:hover {
+            background-color: #f38fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(247, 174, 248, 0.6);
+        }
+
+        /* Email 按鈕 (馬卡龍天空藍) */
+        .btn-email {
+            background-color: #b8c0ff;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(184, 192, 255, 0.4);
+        }
+
+        .btn-email:hover {
+            background-color: #a0aaff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(184, 192, 255, 0.6);
+        }
+
+        .btn-icon {
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <!-- 1. 圓形大頭貼照片 -->
+        <div class="avatar-container">
+            <img src="https://i.postimg.cc/ZRQxyHJ2/my-meme.png" alt="大頭貼" class="avatar">
+        </div>
+        <!-- 2. 名字與簡短自我介紹 -->
+        <h1 class="name">裴氏金銀</h1>
+        <p class="bio">✨ 熱愛生活的 UI/UX 設計新手 | 用色彩記錄生活美好 ✨</p>
+
+        <!-- 3. Instagram 與 Email 按鈕 -->
+        <div class="button-group">
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="btn btn-instagram">
+                <span class="btn-icon">📷</span> Instagram
+            </a>
+            <a href="mailto:your_email@example.com" class="btn btn-email">
+                <span class="btn-icon">✉️</span> Email Me
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
