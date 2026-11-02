@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>網頁冒險家 小明的作品集 🎮</title>
-    
-    <!-- Google Fonts 導入可愛字體 -->
+    <title>✨ 可愛迷因產生器 Meme Generator 🐾</title>
+
+    <!-- 1. 引入 Google Fonts 可愛與粗體字型 (Fredoka, Mochiy Pop One, Noto Sans TC) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Mochiy+Pop+One&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS CDN -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Mochiy+Pop+One&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet">
+
+    <!-- 2. 引入 Tailwind CSS CDN (排版與樣式輔助) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
+    <!-- 3. 引入 html2canvas CDN (將網頁畫面轉為圖片並下載的核心工具) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- 4. 自訂可愛風格樣式 -->
     <style>
         * {
             font-family: 'Fredoka', 'Noto Sans TC', sans-serif;
@@ -24,580 +28,276 @@
             font-family: 'Mochiy Pop One', 'Noto Sans TC', cursive;
         }
 
-        /* 馬卡龍柔和漸層背景 */
+        /* 馬卡龍柔和夢幻漸層背景 */
         body {
             background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 40%, #fbc2eb 100%);
             min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
         }
 
-        /* 雲朵漂浮動畫 */
+        /* 迷因文字樣式：強效黑色粗描邊 (text-shadow)，確保任何背景圖都能看清 */
+        .meme-text {
+            font-family: 'Mochiy Pop One', 'Impact', 'Noto Sans TC', sans-serif;
+            font-weight: 900;
+            color: #ffffff;
+            text-align: center;
+            line-height: 1.25;
+            word-wrap: break-word;
+            /* 多重陰影形成 360 度無死角黑色粗描邊 */
+            text-shadow: 
+                -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000,
+                -3px 0 0 #000, 3px 0 0 #000, 0 -3px 0 #000, 0 3px 0 #000,
+                0 0 10px rgba(0,0,0,0.8);
+        }
+
+        /* 果凍彈簧按鈕動畫 */
+        .btn-jelly {
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-jelly:hover {
+            transform: translateY(-2px) scale(1.02);
+        }
+        .btn-jelly:active {
+            transform: scale(0.95);
+        }
+
+        /* 自訂可愛粉紅滑桿軌道與按鈕 */
+        input[type="range"] {
+            accent-color: #f472b6;
+        }
+
+        /* 背景飄浮可愛雲朵效果 */
         .cloud {
             position: absolute;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.65);
             border-radius: 50px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.04);
+            pointer-events: none;
             animation: floatCloud linear infinite;
-            z-index: 0;
-            pointer-events: none;
         }
-
         @keyframes floatCloud {
-            0% { transform: translateX(-220px); }
+            0% { transform: translateX(-200px); }
             100% { transform: translateX(100vw); }
-        }
-
-        /* 果凍彈簧波浪效果 (Jelly Bounce) */
-        @keyframes jelly {
-            0% { transform: scale(1, 1); }
-            30% { transform: scale(1.1, 0.9); }
-            40% { transform: scale(0.92, 1.08); }
-            50% { transform: scale(1.05, 0.95); }
-            65% { transform: scale(0.98, 1.02); }
-            75% { transform: scale(1.02, 0.98); }
-            100% { transform: scale(1, 1); }
-        }
-
-        /* 未解鎖卡片抖動效果 (Locked Shake) */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-6px) rotate(-3deg); }
-            40% { transform: translateX(6px) rotate(3deg); }
-            60% { transform: translateX(-4px) rotate(-2deg); }
-            80% { transform: translateX(4px) rotate(2deg); }
-        }
-
-        /* 背景星星閃爍動畫 */
-        @keyframes sparkle {
-            0%, 100% { opacity: 0.3; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2) translateY(-8px); }
-        }
-
-        .sparkle-dot {
-            position: absolute;
-            border-radius: 50%;
-            background: white;
-            animation: sparkle 3s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        /* 光斑流光閃爍 */
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(200%); }
-        }
-
-        /* 解鎖卡片 Hover 樣式 */
-        .unlocked-card {
-            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 10px 20px -5px rgba(255, 182, 193, 0.4), 
-                        0 4px 6px -2px rgba(0, 0, 0, 0.05),
-                        inset 0 -4px 0 0 rgba(0, 0, 0, 0.1);
-        }
-
-        .unlocked-card:hover {
-            animation: jelly 0.75s ease;
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 30px -8px rgba(255, 105, 180, 0.45), 
-                        0 0 20px 4px rgba(255, 255, 255, 0.9),
-                        inset 0 -4px 0 0 rgba(0, 0, 0, 0.15);
-        }
-
-        .unlocked-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transform: skewX(-20deg) translateX(-150%);
-            transition: none;
-        }
-
-        .unlocked-card:hover::after {
-            animation: shimmer 1s ease-in-out;
-        }
-
-        /* 未解鎖卡片 Hover 樣式 */
-        .locked-card {
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05), inset 0 -3px 0 rgba(0,0,0,0.08);
-        }
-
-        .locked-card:hover {
-            animation: shake 0.4s ease-in-out;
-            border-color: #fca5a5;
-            background-color: #fef2f2;
-        }
-
-        /* 鎖頭 Tooltip 浮層 */
-        .locked-card .tooltip {
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            transform: translateY(10px) translateX(-50%);
-        }
-
-        .locked-card:hover .tooltip {
-            visibility: visible;
-            opacity: 1;
-            transform: translateY(0) translateX(-50%);
-        }
-
-        /* 頭像柔光 */
-        .avatar-glow {
-            box-shadow: 0 0 25px rgba(255, 182, 193, 0.8), 0 0 10px rgba(255, 255, 255, 0.9);
         }
     </style>
 </head>
-<body class="py-8 px-4 sm:px-8 flex flex-col items-center justify-start min-h-screen">
+<body class="py-8 px-4 sm:px-8 flex flex-col items-center justify-center relative overflow-x-hidden">
 
-    <div class="cloud w-32 h-10 top-12" style="animation-duration: 28s; animation-delay: -3s;"></div>
-    <div class="cloud w-48 h-14 top-36" style="animation-duration: 38s; animation-delay: -18s;"></div>
-    <div class="cloud w-40 h-12 top-2/3" style="animation-duration: 32s; animation-delay: -10s;"></div>
-    
-    <div class="sparkle-dot w-3 h-3 top-20 left-10" style="animation-delay: 0s;"></div>
-    <div class="sparkle-dot w-4 h-4 top-40 right-20" style="animation-delay: 1s;"></div>
-    <div class="sparkle-dot w-2 h-2 bottom-32 left-1/4" style="animation-delay: 1.5s;"></div>
-    <div class="sparkle-dot w-3 h-3 bottom-20 right-1/3" style="animation-delay: 0.5s;"></div>
+    <!-- 背景可愛裝飾雲朵 -->
+    <div class="cloud w-32 h-10 top-8" style="animation-duration: 30s; animation-delay: -5s;"></div>
+    <div class="cloud w-44 h-12 top-40" style="animation-duration: 42s; animation-delay: -20s;"></div>
 
-    <!-- 訊息提示彈窗 (Custom Alert Modal) -->
-    <div id="lockModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-white rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl border-4 border-pink-300 transform scale-90 transition-transform duration-300 id-modal-box">
-            <div class="text-4xl mb-2">🔒</div>
-            <h3 class="text-xl font-bold font-pop text-gray-800">關卡尚未開放！</h3>
-            <p id="modalText" class="text-xs text-gray-500 mt-2">請先解鎖前面的關卡，勇者大人加油！✨</p>
-            <button onclick="closeModal()" class="mt-5 bg-gradient-to-r from-pink-400 to-purple-400 text-white font-bold px-6 py-2 rounded-full shadow-lg hover:brightness-105 active:scale-95 transition-all text-sm">
-                知道囉！
-            </button>
-        </div>
-    </div>
+    <!-- 頁面標題區塊 -->
+    <header class="text-center mb-6 z-10">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800 font-pop tracking-wide flex items-center justify-center gap-2">
+            🎀 可愛迷因產生器 🐾
+        </h1>
+        <p class="text-xs sm:text-sm font-bold text-pink-500 mt-1">選張圖片、打上搞笑台詞，自製梗圖超簡單！✨</p>
+    </header>
 
-    <main class="relative z-10 w-full max-w-5xl flex flex-col items-center">
+    <!-- 主內容容器：響應式配置（電腦為左右分欄，手機為上下疊加） -->
+    <main class="w-full max-w-5xl bg-white/85 backdrop-blur-md rounded-3xl p-5 sm:p-8 border-4 border-white shadow-2xl z-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- 中央個人資訊區塊 -->
-        <header class="w-full max-w-md bg-white/85 backdrop-blur-md rounded-3xl p-6 mb-8 text-center border-4 border-white shadow-xl relative transform hover:scale-[1.01] transition-transform duration-300">
-            <!-- 右上角可愛隊伍標籤 -->
-            <div class="absolute -top-4 -right-2 bg-gradient-to-r from-pink-400 to-purple-400 text-white font-pop text-[11px] px-3 py-1 rounded-full shadow-md transform rotate-6 border-2 border-white">
-                ✨ QUEST ON!
-            </div>
+        <!-- ==================== 左側：控制面板區 (佔 5 欄) ==================== -->
+        <section class="lg:col-span-5 flex flex-col justify-between space-y-5">
+            
+            <div class="space-y-4">
+                <h2 class="text-lg font-bold text-gray-700 font-pop border-b-2 border-pink-200 pb-2 flex items-center gap-2">
+                    🛠️ 梗圖控制台
+                </h2>
 
-            <!-- 頭像區塊 -->
-            <div class="relative inline-block mb-3">
-                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-pink-300 p-1 bg-gradient-to-tr from-pink-200 via-purple-100 to-blue-200 avatar-glow transition-all duration-300">
-                    <img src="https://i.postimg.cc/ncf90BFM/Tep-000.png" 
-                         alt="大頭貼" 
-                         class="w-full h-full object-cover rounded-full border-2 border-white bg-pink-50"
-                         onerror="this.src='https://placehold.co/150x150/FFB6C1/ffffff?text=Cute+Me'">
-                </div>
-                <!-- 等級標籤 -->
-                <span class="absolute bottom-0 -right-2 bg-amber-300 text-amber-900 font-extrabold text-xs px-3 py-1 rounded-full border-2 border-white shadow-md flex items-center gap-1">
-                    <span>⭐</span> LV.16 網頁開發新手
-                </span>
-            </div>
-
-            <!-- 名字與稱號 -->
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-800 tracking-wide font-pop flex items-center justify-center gap-2 mt-1">
-                裴氏金銀 🎮
-            </h1>
-            <p class="text-xs sm:text-sm font-semibold text-pink-500 mt-1">網頁程式設計課程闖關地圖 ✨</p>
-
-            <!-- 經驗值進度條 (已更新為 3 / 16 解鎖 -> 18.75%) -->
-            <div class="mt-4 w-full bg-pink-100 rounded-full h-4 p-0.5 border border-pink-200 shadow-inner relative overflow-hidden">
-                <div class="bg-gradient-to-r from-pink-400 via-purple-400 to-amber-400 h-full rounded-full w-[18.75%] transition-all duration-1000 shadow"></div>
-                <span class="absolute inset-0 flex items-center justify-center text-[10px] font-extrabold text-gray-700 tracking-wider">
-                    EXP: 3 / 16 關卡已解鎖 (18.75%)
-                </span>
-            </div>
-        </header>
-
-        <section class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
-
-            <!-- Card 1: Week 1 (已解鎖) -->
-            <a href="w1/index.html" class="unlocked-card bg-gradient-to-br from-pink-100 via-purple-50 to-pink-50 border-2 border-pink-300 rounded-2xl p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden">
+                <!-- 1. 本機圖片上傳 (使用 input type="file" 與 FileReader 避免 CORS 錯誤) -->
                 <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-pink-400 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
-                            WEEK 01
-                        </span>
-                        <span class="text-xl">🌟</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-800 font-pop group-hover:text-pink-600 transition-colors">
-                        Week 1 - 數位名片
-                    </h3>
-                    <p class="text-xs text-gray-500 mt-1">個人品牌展示，學習 HTML/CSS 基礎與元件排版。</p>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">1. 上傳照片 / 底圖</label>
+                    <input type="file" id="imageInput" accept="image/*" class="hidden">
+                    <button onclick="document.getElementById('imageInput').click()" 
+                            class="w-full bg-gradient-to-r from-pink-100 to-purple-100 hover:from-pink-200 hover:to-purple-200 text-pink-600 font-bold py-2.5 px-4 rounded-2xl border-2 border-dashed border-pink-300 text-sm flex items-center justify-center gap-2 btn-jelly shadow-sm">
+                        📁 選擇本機圖片檔
+                    </button>
                 </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-pink-100">
-                    <span class="text-xs font-bold text-emerald-500 flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 已解鎖
-                    </span>
-                    <span class="text-xs font-extrabold text-pink-500 group-hover:translate-x-1 transition-transform">
-                        前往冒險 ➔
-                    </span>
-                </div>
-            </a>
 
-            <!-- Card 2: Week 2 (已解鎖) -->
-            <a href="w2/index.html" class="unlocked-card bg-gradient-to-br from-sky-100 via-blue-50 to-teal-50 border-2 border-sky-300 rounded-2xl p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden">
+                <!-- 2. 上方文字輸入框 -->
                 <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-sky-400 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
-                            WEEK 02
-                        </span>
-                        <span class="text-xl">🍕</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-800 font-pop group-hover:text-sky-600 transition-colors">
-                        Week 2 - 今天吃甚麼?
-                    </h3>
-                    <p class="text-xs text-gray-500 mt-1">選擇困難救星！互動式美食選擇輪盤專案。</p>
+                    <label class="block text-xs font-bold text-gray-600 mb-1" for="topTextInput">2. 上方文字</label>
+                    <input type="text" id="topTextInput" placeholder="輸入上方搞笑台詞..." 
+                           class="w-full px-4 py-2.5 rounded-xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none text-sm font-bold text-gray-700 bg-white/90 shadow-inner">
                 </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-sky-100">
-                    <span class="text-xs font-bold text-emerald-500 flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 已解鎖
-                    </span>
-                    <span class="text-xs font-extrabold text-sky-500 group-hover:translate-x-1 transition-transform">
-                        前往冒險 ➔
-                    </span>
-                </div>
-            </a>
 
-            <!-- Card 3: Week 3 (已解鎖 - 迷因產生器) -->
-            <a href="w3/index.html" class="unlocked-card bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-50 border-2 border-amber-300 rounded-2xl p-4 flex flex-col justify-between relative group cursor-pointer overflow-hidden">
+                <!-- 3. 下方文字輸入框 -->
                 <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-amber-400 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
-                            WEEK 03
-                        </span>
-                        <span class="text-xl">🤡</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-800 font-pop group-hover:text-amber-600 transition-colors">
-                        Week 3 - 迷因產生器
-                    </h3>
-                    <p class="text-xs text-gray-500 mt-1">梗圖製造機！自訂圖片與文字，打造專屬爆笑迷因。</p>
+                    <label class="block text-xs font-bold text-gray-600 mb-1" for="bottomTextInput">3. 下方文字</label>
+                    <input type="text" id="bottomTextInput" placeholder="輸入下方梗圖文字..." 
+                           class="w-full px-4 py-2.5 rounded-xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none text-sm font-bold text-gray-700 bg-white/90 shadow-inner">
                 </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-amber-100">
-                    <span class="text-xs font-bold text-emerald-500 flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 已解鎖
-                    </span>
-                    <span class="text-xs font-extrabold text-amber-500 group-hover:translate-x-1 transition-transform">
-                        前往冒險 ➔
-                    </span>
-                </div>
-            </a>
 
-            <!-- Week 4 ~ Week 16 (未解鎖卡片) -->
-
-            <!-- Week 4 -->
-            <div onclick="showLockedAlert('Week 4')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
-                            WEEK 04
-                        </span>
-                        <span class="text-base">🔒</span>
+                <!-- 4. 參數控制滑桿區塊 -->
+                <div class="bg-pink-50/80 p-4 rounded-2xl border border-pink-100 space-y-3.5">
+                    
+                    <!-- 滑桿 A: 字體大小 -->
+                    <div>
+                        <div class="flex justify-between text-xs font-bold text-gray-600 mb-1">
+                            <span>🔤 字體大小</span>
+                            <span id="fontSizeVal" class="text-pink-500 font-extrabold">32px</span>
+                        </div>
+                        <input type="range" id="fontSizeSlider" min="16" max="72" value="32" class="w-full cursor-pointer">
                     </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 4 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
+
+                    <!-- 滑桿 B: 上方文字垂直位置 (Top) -->
+                    <div>
+                        <div class="flex justify-between text-xs font-bold text-gray-600 mb-1">
+                            <span>⬆️ 上方文字高度 (Top)</span>
+                            <span id="topPosVal" class="text-pink-500 font-extrabold">12px</span>
+                        </div>
+                        <input type="range" id="topPosSlider" min="0" max="150" value="12" class="w-full cursor-pointer">
+                    </div>
+
+                    <!-- 滑桿 C: 下方文字垂直位置 (Bottom) -->
+                    <div>
+                        <div class="flex justify-between text-xs font-bold text-gray-600 mb-1">
+                            <span>⬇️ 下方文字高度 (Bottom)</span>
+                            <span id="bottomPosVal" class="text-pink-500 font-extrabold">12px</span>
+                        </div>
+                        <input type="range" id="bottomPosSlider" min="0" max="150" value="12" class="w-full cursor-pointer">
+                    </div>
+
                 </div>
             </div>
 
-            <!-- Week 5 -->
-            <div onclick="showLockedAlert('Week 5')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
-                            WEEK 05
-                        </span>
-                        <span class="text-base">🔒</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 5 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
-                </div>
-            </div>
-
-            <!-- Week 6 -->
-            <div onclick="showLockedAlert('Week 6')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
-                            WEEK 06
-                        </span>
-                        <span class="text-base">🔒</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 6 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
-                </div>
-            </div>
-
-            <!-- Week 7 -->
-            <div onclick="showLockedAlert('Week 7')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
-                            WEEK 07
-                        </span>
-                        <span class="text-base">🔒</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 7 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
-                </div>
-            </div>
-
-            <!-- Week 8 -->
-            <div onclick="showLockedAlert('Week 8')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
-                            WEEK 08
-                        </span>
-                        <span class="text-base">🔒</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 8 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
-                </div>
-            </div>
-
-            <!-- Week 9 -->
-            <div onclick="showLockedAlert('Week 9')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
-                            WEEK 09
-                        </span>
-                        <span class="text-base">🔒</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 9 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
-                </div>
-            </div>
-
-            <!-- Week 10 -->
-            <div onclick="showLockedAlert('Week 10')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
-                            WEEK 10
-                        </span>
-                        <span class="text-base">🔒</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 10 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
-                </div>
-            </div>
-
-            <!-- Week 11 -->
-            <div onclick="showLockedAlert('Week 11')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
-                            WEEK 11
-                        </span>
-                        <span class="text-base">🔒</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 11 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
-                </div>
-            </div>
-
-            <!-- Week 12 -->
-            <div onclick="showLockedAlert('Week 12')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
-                            WEEK 12
-                        </span>
-                        <span class="text-base">🔒</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 12 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
-                </div>
-            </div>
-
-            <!-- Week 13 -->
-            <div onclick="showLockedAlert('Week 13')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
-                            WEEK 13
-                        </span>
-                        <span class="text-base">🔒</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 13 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
-                </div>
-            </div>
-
-            <!-- Week 14 -->
-            <div onclick="showLockedAlert('Week 14')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
-                            WEEK 14
-                        </span>
-                        <span class="text-base">🔒</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 14 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
-                </div>
-            </div>
-
-            <!-- Week 15 -->
-            <div onclick="showLockedAlert('Week 15')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    🔒 尚未開放挑戰！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gray-300 text-gray-600 font-bold text-[11px] px-2.5 py-1 rounded-lg">
-                            WEEK 15
-                        </span>
-                        <span class="text-base">🔒</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 15 - 未解鎖</h3>
-                    <p class="text-xs text-gray-400 mt-1">神秘任務關卡，完成前置關卡後開放。</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">LOCKED</span>
-                </div>
-            </div>
-
-            <!-- Week 16 (FINAL BOSS) -->
-            <div onclick="showLockedAlert('Week 16')" class="locked-card bg-gray-100/90 border-2 border-gray-300/80 rounded-2xl p-4 flex flex-col justify-between relative cursor-pointer group">
-                <div class="tooltip absolute -top-10 left-1/2 bg-gray-800 text-white text-[11px] py-1 px-3 rounded-lg shadow-md whitespace-nowrap pointer-events-none z-20">
-                    👑 終極大魔王關卡！
-                </div>
-                <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="bg-gradient-to-r from-amber-400 to-pink-400 text-white font-extrabold text-[11px] px-2.5 py-1 rounded-lg shadow-sm">
-                            WEEK 16 (FINAL)
-                        </span>
-                        <span class="text-base">👑</span>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-400 font-pop">Week 16 - 終極大魔王</h3>
-                    <p class="text-xs text-gray-400 mt-1">期末專題作品，解鎖終極榮譽徽章！</p>
-                </div>
-                <div class="mt-4 flex items-center justify-between pt-2 border-t border-gray-200">
-                    <span class="text-xs font-bold text-gray-400 flex items-center gap-1">🔒 鎖定中</span>
-                    <span class="text-[10px] font-extrabold text-gray-300">BOSS</span>
-                </div>
-            </div>
-
+            <!-- 5. 一鍵下載圖檔按鈕 -->
+            <button id="downloadBtn" 
+                    class="w-full mt-2 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 hover:brightness-105 text-white font-extrabold py-3.5 px-6 rounded-2xl shadow-lg border-2 border-white text-base flex items-center justify-center gap-2 btn-jelly">
+                ✨ 一鍵下載迷因圖檔 (my-meme.png)
+            </button>
         </section>
 
-        <!-- 頁尾 -->
-        <footer class="mt-12 text-center text-xs text-gray-600 font-medium pb-6">
-            <p>© 2026 網頁程式設計課程作品集 | Made with 💖 & Tailwind CSS</p>
-        </footer>
+        <!-- ==================== 右側：迷因即時預覽區 (佔 7 欄) ==================== -->
+        <section class="lg:col-span-7 flex flex-col items-center justify-center bg-gray-100/70 rounded-2xl p-4 border-2 border-dashed border-pink-200 min-h-[340px]">
+            
+            <!-- html2canvas 會將此區塊 (#memeContainer) 擷取轉換成圖片 -->
+            <div id="memeContainer" class="relative overflow-hidden rounded-2xl shadow-md max-w-full bg-slate-200 flex items-center justify-center">
+                
+                <!-- 預設底圖（未上傳新照片時顯示） -->
+                <img id="memeImage" src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=600&auto=format&fit=crop&q=80" 
+                     alt="迷因底圖" class="max-h-[480px] w-auto object-contain block select-none">
+
+                <!-- 浮動上方文字 -->
+                <div id="topTextDisplay" 
+                     class="meme-text absolute left-0 right-0 px-4 pointer-events-none"
+                     style="top: 12px; font-size: 32px;">
+                    當你終於寫完 HTML 程式碼時
+                </div>
+
+                <!-- 浮動下方文字 -->
+                <div id="bottomTextDisplay" 
+                     class="meme-text absolute left-0 right-0 px-4 pointer-events-none"
+                     style="bottom: 12px; font-size: 32px;">
+                    感覺自己像個超級駭客 💻
+                </div>
+            </div>
+
+            <p class="text-[11px] font-bold text-gray-400 mt-3">💡 調整左側數值時，右側畫面會即時呈現效果喔！</p>
+        </section>
     </main>
 
-    <!-- JS 互動邏輯：用於鎖定關卡提示彈窗 -->
+    <!-- 頁尾連結 -->
+    <footer class="mt-6 text-center text-xs text-gray-600 font-medium z-10">
+        <a href="index.html" class="text-pink-600 hover:underline font-bold">➔ 返回作品集闖關地圖</a>
+    </footer>
+
+    <!-- ==================== JavaScript 程式邏輯 ==================== -->
     <script>
-        function showLockedAlert(weekName) {
-            const modal = document.getElementById('lockModal');
-            const modalText = document.getElementById('modalText');
-            modalText.innerText = `『${weekName}』尚未開放挑戰，請繼續完成作業累積經驗值！✨`;
-            
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            modal.classList.add('opacity-100');
-            
-            const modalBox = modal.querySelector('.id-modal-box');
-            modalBox.classList.remove('scale-90');
-            modalBox.classList.add('scale-100');
-        }
+        // 【步驟 1】取得 DOM HTML 元素
+        const imageInput = document.getElementById('imageInput');
+        const memeImage = document.getElementById('memeImage');
+        
+        const topTextInput = document.getElementById('topTextInput');
+        const bottomTextInput = document.getElementById('bottomTextInput');
+        const topTextDisplay = document.getElementById('topTextDisplay');
+        const bottomTextDisplay = document.getElementById('bottomTextDisplay');
 
-        function closeModal() {
-            const modal = document.getElementById('lockModal');
-            const modalBox = modal.querySelector('.id-modal-box');
-            
-            modal.classList.remove('opacity-100');
-            modal.classList.add('opacity-0', 'pointer-events-none');
-            
-            modalBox.classList.remove('scale-100');
-            modalBox.classList.add('scale-90');
-        }
+        const fontSizeSlider = document.getElementById('fontSizeSlider');
+        const topPosSlider = document.getElementById('topPosSlider');
+        const bottomPosSlider = document.getElementById('bottomPosSlider');
 
-        // 點擊 Modal 背景遮罩亦可關閉
-        document.getElementById('lockModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
+        const fontSizeVal = document.getElementById('fontSizeVal');
+        const topPosVal = document.getElementById('topPosVal');
+        const bottomPosVal = document.getElementById('bottomPosVal');
+
+        const downloadBtn = document.getElementById('downloadBtn');
+        const memeContainer = document.getElementById('memeContainer');
+
+        // 【步驟 2】本機圖片上傳處理 (使用 FileReader 讀取本地圖檔，徹底避免 CORS 跨域錯誤)
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0]; // 取得使用者選擇的第一個檔案
+            if (file) {
+                const reader = new FileReader(); // 建立檔案讀取器
+                
+                // 當檔案載入完成時執行的 callback
+                reader.onload = function(event) {
+                    memeImage.src = event.target.result; // 將圖片路徑轉成 Data URL (Base64) 賦予給 <img>
+                };
+                
+                reader.readAsDataURL(file); // 開始讀取檔案
             }
+        });
+
+        // 【步驟 3】文字即時同步更新
+        topTextInput.addEventListener('input', function() {
+            topTextDisplay.innerText = this.value || '請輸入上方文字';
+        });
+
+        bottomTextInput.addEventListener('input', function() {
+            bottomTextDisplay.innerText = this.value || '請輸入下方文字';
+        });
+
+        // 【步驟 4】滑桿參數即時控制（字體大小、上方/下方垂直位置）
+        // A. 調整字體大小
+        fontSizeSlider.addEventListener('input', function() {
+            const size = this.value + 'px';
+            topTextDisplay.style.fontSize = size;
+            bottomTextDisplay.style.fontSize = size;
+            fontSizeVal.innerText = size; // 更新顯示的數值文字
+        });
+
+        // B. 微調上方文字垂直位置 (Top)
+        topPosSlider.addEventListener('input', function() {
+            const pos = this.value + 'px';
+            topTextDisplay.style.top = pos;
+            topPosVal.innerText = pos;
+        });
+
+        // C. 微調下方文字垂直位置 (Bottom)
+        bottomPosSlider.addEventListener('input', function() {
+            const pos = this.value + 'px';
+            bottomTextDisplay.style.bottom = pos;
+            bottomPosVal.innerText = pos;
+        });
+
+        // 【步驟 5】一鍵下載圖檔 (使用 html2canvas 截圖並下載)
+        downloadBtn.addEventListener('click', function() {
+            // 下載進行中，改變按鈕文字並暫時禁用按鈕
+            const originalBtnText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = '⏳ 迷因圖檔合成中...';
+            downloadBtn.disabled = true;
+
+            // 呼叫 html2canvas 針對 #memeContainer 畫布區塊做截圖
+            html2canvas(memeContainer, {
+                useCORS: true, // 允許跨域圖片繪製
+                scale: 2       // 設定 2 倍解析度，讓下載出來的 PNG 迷因更清晰
+            }).then(canvas => {
+                // 建立一個隱藏的 <a> 觸發下載
+                const link = document.createElement('a');
+                link.download = 'my-meme.png'; // 設定下載的檔名為 my-meme.png
+                link.href = canvas.toDataURL('image/png'); // 轉成圖片 Data URL
+                link.click(); // 觸發點擊下載
+
+                // 恢復按鈕原本樣式
+                downloadBtn.innerHTML = originalBtnText;
+                downloadBtn.disabled = false;
+            }).catch(err => {
+                alert('下載失敗，請重新選擇圖片或重試！');
+                console.error(err);
+                downloadBtn.innerHTML = originalBtnText;
+                downloadBtn.disabled = false;
+            });
         });
     </script>
 </body>
