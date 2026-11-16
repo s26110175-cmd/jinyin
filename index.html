@@ -131,7 +131,7 @@
 
     .progress-bar-fill {
       height: 100%;
-      width: 25%; /* 4/16 = 25% */
+      width: 31.25%; /* 5/16 = 31.25% */
       background: linear-gradient(90deg, #ff9a9e 0%, #fecfef 100%);
       border-radius: 10px;
       transition: width 0.5s ease;
@@ -293,13 +293,13 @@
       <div class="avatar-wrapper">
         <img class="avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=CutePortfolio" alt="預設大頭貼">
       </div>
-      <h1 class="user-name">網頁冒險家 ✨</h1>
+      <h1 class="user-name">裴氏金銀 ✨</h1>
       <p class="user-bio">Welcome to my Web Dev Quest Log!</p>
     </header>
 
     <!-- 闖關進度條 -->
     <div class="progress-section">
-      <div class="progress-title">目前進度：4 / 16 關卡已解鎖 🎯</div>
+      <div class="progress-title">目前進度：5 / 16 關卡已解鎖 🎯</div>
       <div class="progress-bar-bg">
         <div class="progress-bar-fill"></div>
       </div>
@@ -344,15 +344,16 @@
         <div class="card-title">悄悄話</div>
       </a>
 
-      <!-- 按鈕 5 至 16 (未解鎖) -->
-      <a href="#" class="card locked" onclick="return false;">
+      <!-- 按鈕 5 (已解鎖) -->
+      <a href="w5/index.html" class="card unlocked">
         <div class="card-header">
           <span class="badge">Week 5</span>
-          <span class="card-icon">🔒</span>
+          <span class="card-icon">🚀</span>
         </div>
-        <div class="card-title">未解鎖任務</div>
+        <div class="card-title">心電感應</div>
       </a>
 
+      <!-- 按鈕 6 至 16 (未解鎖) -->
       <a href="#" class="card locked" onclick="return false;">
         <div class="card-header">
           <span class="badge">Week 6</span>
